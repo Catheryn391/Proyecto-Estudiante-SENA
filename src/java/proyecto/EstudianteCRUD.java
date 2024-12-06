@@ -84,7 +84,7 @@ public class EstudianteCRUD {
             if (filas > 0) {
                 declaracion.close();
                 sql.desconectar();
-                return mostrarEstudiante(estudiante.getDoc_est());
+                return estudiante;
             }
         } catch (SQLException ex) {
             Logger.getLogger(EstudianteCRUD.class.getName()).log(Level.SEVERE, null, ex);
@@ -103,12 +103,10 @@ public class EstudianteCRUD {
             declaracion.close();
             sql.desconectar();
             return true;
-
         } catch (SQLException ex) {
             Logger.getLogger(EstudianteCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-        return false;
-
     }
 
     public List<Estudiante> mostrarEstudiante() {
