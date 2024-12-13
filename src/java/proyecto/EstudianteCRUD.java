@@ -99,7 +99,7 @@ public class EstudianteCRUD {
         try {
             declaracion = conexion.prepareStatement(consulta);
             declaracion.setString(1, documento);
-            declaracion.execute(consulta);
+            declaracion.execute();
             declaracion.close();
             sql.desconectar();
             return true;
