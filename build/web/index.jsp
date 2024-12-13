@@ -116,17 +116,14 @@
             }
 
             .btn-action {
-                padding: 8px 16px;
-                font-size: 14px;
-                border-radius: 4px;
-                cursor: pointer;
+                padding: 5px 10px;
+                color: #fff;
                 border: none;
+                cursor: pointer;
             }
 
             .btn-edit {
-                background-color: #ff9800;
-                color: white;
-                margin-right: 10px;
+                background-color: #4CAF50;
             }
 
             .btn-edit:hover {
@@ -156,7 +153,54 @@
                     font-size: 14px;
                 }
             }
+            
+            input[type="text"], input[type="number"] {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .editable input {
+                display: inline-block;
+            }
+            .editable span {
+                display: none;
+            }
+            .non-editable input {
+                display: none;
+            }
+            .non-editable span {
+                display: inline-block;
+            }
         </style>
+        <script>
+            function toggleEdit(rowId) {
+                const row = document.getElementById(rowId);
+                const isEditable = row.classList.contains("editable");
+                
+                // Toggle classes
+                row.classList.toggle("editable", !isEditable);
+                row.classList.toggle("non-editable", isEditable);
+
+                // Toggle visibility of buttons and inputs
+                const saveButton = row.querySelector('.btn-save');
+                const editButton = row.querySelector('.btn-edit');
+                const inputs = row.querySelectorAll('input');
+                const spans = row.querySelectorAll('span');
+
+                if (!isEditable) {
+                    // Switch to edit mode
+                    inputs.forEach(input => input.style.display = 'inline-block');
+                    spans.forEach(span => span.style.display = 'none');
+                    saveButton.style.display = 'inline-block';
+                    editButton.style.display = 'none';
+                } else {
+                    // Switch to view mode
+                    inputs.forEach(input => input.style.display = 'none');
+                    spans.forEach(span => span.style.display = 'inline-block');
+                    saveButton.style.display = 'none';
+                    editButton.style.display = 'inline-block';
+                }
+            }
+        </script>
     </head>
     <body>
         <main>
@@ -183,10 +227,10 @@
                 </form>
                 <br>
                 <%
-                String cedula= request.getParameter("doc_est");
-                String nombre= request.getParameter("nom_est");
-                String apellido= request.getParameter("ape_est");
-                String edad= request.getParameter("edad_est");
+                String cedula = request.getParameter("doc_est");
+                String nombre = request.getParameter("nom_est");
+                String apellido = request.getParameter("ape_est");
+                String edad = request.getParameter("edad_est");
                 //1String action= request.getParameter("action");
                 if ("enviar".equals(request.getParameter("action"))){
                     if( cedula!=null && nombre!=null && apellido!=null && edad!=null){
@@ -199,7 +243,7 @@
                                         }
                 %>
             </div>
-
+            
             <div class="content">
                 <table>
                     <tr>
@@ -217,19 +261,38 @@
                         if (listaEstudiantes != null) {
                             for (Estudiante infoEstudiante : listaEstudiantes) {
                     %>
-                    <tr>
+                    <tr id="row_<%= infoEstudiante.getDoc_est() %>" class="non-editable">
                         <td><%= infoEstudiante.getDoc_est() %></td>
-                        <td><%= infoEstudiante.getNom_est() %></td>
-                        <td><%= infoEstudiante.getApe_est() %></td>
-                        <td><%= infoEstudiante.getEdad_est() %></td>
+                         <td>
+                            <span><%= infoEstudiante.getNom_est()%></span>
+                            <input type="text" name="nombre_<%= infoEstudiante.getDoc_est() %>" value="<%= infoEstudiante.getNom_est()%>">
+                        </td>
                         <td>
-                            <form method="GET" action="editarEstudiante.jsp">
+                            <span><%= infoEstudiante.getApe_est() %></span>
+                            <input type="text" name="apellido_<%= infoEstudiante.getDoc_est() %>" value="<%= infoEstudiante.getApe_est() %>">
+                        </td>
+                        <td>
+                            <span><%= infoEstudiante.getEdad_est() %></span>
+                            <input type="number" name="edad_<%= infoEstudiante.getDoc_est() %>" value="<%= infoEstudiante.getEdad_est() %>">
+                        </td>
+                        <td>
+                            <button type="button" class="btn-action btn-edit" onclick="toggleEdit('row_<%= infoEstudiante.getDoc_est() %>')">
+                                Editar
+                            </button>
+                            <form method="POST" action="index.jsp" style="display:inline;">
+                                <input type="hidden" name="action" value="editar">
                                 <input type="hidden" name="doc_est" value="<%= infoEstudiante.getDoc_est() %>">
-                                <button type="submit" class="btn-action btn-edit">Editar</button>
+                                <input type="hidden" name="nombre" value="">
+                                <input type="hidden" name="apellido" value="">
+                                <input type="hidden" name="edad" value="">
+                                <button type="submit" class="btn-action btn-save" style="display:none;">Guardar</button>
                             </form>
                         </td>
                         <td>
-                            <button type="submit">Borrar</button>
+                            <form method="POST" action="" onsubmit="return confirm('¿Está seguro de que desea borrar este estudiante?');">
+                                <input type="hidden" name="doc_est" value="<%= infoEstudiante.getDoc_est() %>">
+                                <button type="submit" class="btn-action btn-delete">Borrar</button>
+                            </form>
                         </td>
                     </tr>
                     <%
@@ -240,6 +303,22 @@
                         <td colspan="4">No hay estudiantes registrados</td>
                     </tr>
                     <%
+                        }
+                    %>
+                    
+                     <%
+                        if ("editar".equals(request.getParameter("action"))) {
+                            String docEst = request.getParameter("doc_est");
+                            String nombreEst = request.getParameter("nombre");
+                            String apellidoEst = request.getParameter("apellido");
+                            String edadEst = request.getParameter("edad");
+
+                            if (docEst != null && nombreEst != null && apellidoEst != null && edadEst != null) {
+                                short edadEstudianteEditado = Short.parseShort(edadEst);
+                                Estudiante estudianteEditado = new Estudiante(docEst, nombreEst, apellidoEst, edadEstudianteEditado);
+                                estudianteServicio.editarEstudiante(estudianteEditado, docEst);
+                            }
+                            response.sendRedirect("index.jsp");
                         }
                     %>
                 </table>
