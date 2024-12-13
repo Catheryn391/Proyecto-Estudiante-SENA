@@ -110,7 +110,7 @@ public class EstudianteCRUD {
     }
 
     public List<Estudiante> mostrarEstudiante() {
-        String consulta = "SELECT * FROM ESTUDIANTE";
+        String consulta = "SELECT * FROM ESTUDIANTE ORDER BY doc_est";
         conexion = sql.conectar();
         try {
             declaracion = conexion.prepareStatement(consulta);

@@ -263,7 +263,7 @@
                             for (Estudiante infoEstudiante : listaEstudiantes) {
                     %>
                     <tr id="row_<%= infoEstudiante.getDoc_est() %>" class="non-editable">
-                        <form method="POST" action="index.jsp">
+                        <form method="POST" action="editarEstudiante.jsp">
                             <td><%= infoEstudiante.getDoc_est() %>
                                 <input type="hidden" name="doc_est" value="<%= infoEstudiante.getDoc_est() %>">
                                 <input type="hidden" name="action" value="">
@@ -288,7 +288,7 @@
                             </td>
                         </form>
                         <td>
-                            <form method="POST" action="" onsubmit="return confirm('¿Está seguro de que desea borrar este estudiante?');">
+                            <form method="POST" action="borrarEstudiante.jsp" onsubmit="return confirm('¿Está seguro de que desea borrar este estudiante?');">
                                 <input type="hidden" name="doc_est" value="<%= infoEstudiante.getDoc_est() %>">
                                 <button type="submit" class="btn-action btn-delete">Borrar</button>
                             </form>
@@ -302,22 +302,6 @@
                         <td colspan="4">No hay estudiantes registrados</td>
                     </tr>
                     <%
-                        }
-                    %>
-
-                    <%
-                        if ("editar".equals(request.getParameter("action"))) {
-                            String docEst = request.getParameter("doc_est");
-                            String nombreEst = request.getParameter("nombre");
-                            String apellidoEst = request.getParameter("apellido");
-                            String edadEst = request.getParameter("edad");
-
-                            if (docEst != null && nombreEst != null && apellidoEst != null && edadEst != null) {
-                                short edadEstudianteEditado = Short.parseShort(edadEst);
-                                Estudiante estudianteEditado = new Estudiante(docEst, nombreEst, apellidoEst, edadEstudianteEditado);
-                                estudianteServicio.editarEstudiante(estudianteEditado, docEst);
-                            }
-                            response.sendRedirect("index.jsp");
                         }
                     %>
                 </table>
